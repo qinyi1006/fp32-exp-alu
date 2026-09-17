@@ -1,10 +1,13 @@
 # 验证结果
 
-日期：2026-09-16。平台：macOS arm64。仿真器：Icarus Verilog 12.0。
+最新复验日期：2026-09-17。平台：macOS arm64。仿真器：Icarus Verilog 12.0。
+
+本次修改移除了 RTL 的 signed 声明、$signed 转换和有符号字面量。范围缩减改用无符号幅值乘法与显式补码余数修正，指数加法使用显式最高位复制。
+Python 定点模型和测试向量生成逻辑均未修改，继续以原有模型验证行为一致性。
 
 ## 实际运行
 
-执行 `./run.sh`，退出码为 0；最终编译无警告，仿真输出为：
+执行 `bash run.sh`，退出码为 0；最终编译无警告，仿真输出为：
 
 ```text
 PASS: 454400 vectors, max_relative_error=1.880847190378e-06, worst_x=c27ebb4a (-63.682899475098)
@@ -22,7 +25,7 @@ PASS: 454400 vectors, max_relative_error=1.880847190378e-06, worst_x=c27ebb4a (-
 所有样本按固定种子打乱后连续送入组合单元。仿真每次等待 1ns 仅用于传播稳定，不代表硬件延迟或目标周期。
 
 另用 `iverilog -g2005 -Wall -s exp_fp32 -t null rtl/exp_fp32.v` 确认设计文件独立通过 Verilog-2005 编译；只有 testbench 使用 SystemVerilog 仿真特性。
-检查设计文件不含 if、always、initial、时钟或 TIE_FLOP 实例，存在七个指定格式的流水线注释。
+检查设计文件不含 signed、$signed、有符号字面量、if、always、initial、时钟或 TIE_FLOP 实例，存在七个指定格式的流水线注释。
 所有信号依赖均从输入向输出，无回授或状态存储。
 
 ## 产物
