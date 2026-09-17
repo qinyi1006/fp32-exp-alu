@@ -8,17 +8,22 @@ module exp_fp32(input wire [31:0] x, output wire [31:0] y);
     wire [23:0] input_sig = {(|input_exp), x[22:0]};
     wire [7:0] left_amount = input_exp - 8'd126;
     wire [7:0] right_amount = 8'd126 - input_exp;
-    wire [31:0] magnitude = (input_exp >= 8'd126)
-        ? ({8'b0, input_sig} << left_amount)
-        : ({8'b0, input_sig} >> right_amount);
-    wire signed [31:0] x_q24 = x[31] ? -$signed(magnitude) : $signed(magnitude);
+    wire [30:0] magnitude = (input_exp >= 8'd126)
+        ? ({7'b0, input_sig} << left_amount)
+        : ({7'b0, input_sig} >> right_amount);
+    wire negative = x[31];
     // please add tie pipe here
-    // Boundary 1: register x_q24.
+    // Boundary 1: register magnitude and negative.
 
-    // Stage 2: floor(x_q24 * log2(e)) into signed Q24.
-    wire signed [63:0] log_product = x_q24 * 32'sd1549082005;
-    wire signed [31:0] y_q24 = log_product[61:30];
-    wire signed [7:0] k = y_q24[31:24];
+    // Stage 2: multiply magnitudes, then form the floor in two's complement.
+    wire [61:0] log_product = magnitude * 31'd1549082005;
+    wire [31:0] log_integer = log_product[61:30];
+    wire log_fraction_zero = ~(|log_product[29:0]);
+    // floor(-P / 2^30) = ~floor(P / 2^30) + (remainder == 0).
+    // Applying the remainder correction is essential for negative inputs.
+    wire [31:0] negative_y_q24 = (~log_integer) + {31'b0, log_fraction_zero};
+    wire [31:0] y_q24 = negative ? negative_y_q24 : log_integer;
+    wire [7:0] k = y_q24[31:24];
     wire [4:0] j = y_q24[23:19];
     wire [18:0] r_q24 = y_q24[18:0];
     // please add tie pipe here
@@ -117,8 +122,8 @@ module exp_fp32(input wire [31:0] x, output wire [31:0] y);
     wire [24:0] rounded_sig = {1'b0, mant_q24[24:1]} + {24'b0, round_up};
     wire carry = rounded_sig[24];
     wire [22:0] fraction = carry ? rounded_sig[23:1] : rounded_sig[22:0];
-    wire signed [8:0] output_exp = $signed({k[7], k}) + 9'sd127
-                                + $signed({8'b0, carry});
+    // Explicit sign-bit replication; modulo-512 addition gives k+127+carry.
+    wire [8:0] output_exp = {k[7], k} + 9'd127 + {8'b0, carry};
     assign y = {1'b0, output_exp[7:0], fraction};
     // please add tie pipe here
     // Boundary 7: register y. Seven stages total; II=1. No feedback.
