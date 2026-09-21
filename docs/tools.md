@@ -60,3 +60,15 @@ bash run.sh
 ```
 
 也可使用已安装的 Icarus 12.0；不必为了运行工程重新构建工具。
+
+## 2026-09-17：Q 格式误差曲线分析新增工具
+
+绘图使用 Codex 已有 Python 3.12 运行时：
+`/Users/yi.qin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3`。
+该运行时未新安装。C 数值搜索继续使用已有 Apple clang 21.0.0。
+
+本次从 PyPI 安装 Matplotlib 及其依赖至
+`/Users/yi.qin/Desktop/exp/.tools/q-sweep-python/`，用于绘制科学误差曲线并导出 PNG、SVG；未修改系统 Python。
+实际安装版本：Matplotlib 3.11.2、NumPy 2.5.3、ContourPy 1.4.0、cycler 0.12.1、fonttools 4.65.0、kiwisolver 1.5.1、packaging 26.3、Pillow 12.3.0、pyparsing 3.3.2、python-dateutil 2.9.0.post0、six 1.17.0。
+除 Matplotlib 外均为其绘图、数值或图像输出依赖。安装日志：`build/q-sweep-pip.log`。
+Matplotlib 字体缓存位于 `.tools/mplconfig/`；图中的中文使用 macOS 已有 Hiragino Sans GB 字体。
