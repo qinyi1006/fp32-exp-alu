@@ -10,6 +10,8 @@
 - `scripts/generate_lut.py`：重生成 RTL 内的均衡查表选择树。
 - `docs/tools.md`：工具版本、位置、来源及安装原因。
 - `docs/validation.md`：实际验证结果及未验证事项。
+- [Q 格式误差研究](analysis/q_sweep/README.md)：Q12～Q26 最大相对误差曲线、全区间模型搜索、原始数据和复现脚本。
+- [TIE 对照调试](docs/debug.md)：自定义 32 位输入数组，导出全部信号的稳定值和逐次更新 CSV。
 
 在本目录执行：
 
@@ -23,6 +25,9 @@ bash run.sh
 `--random N` 为每种随机分布的抽样次数，定向边界测试始终保留。
 编译、模型和仿真结果写入 `build/`。任意编译错误、位不一致或误差超限会使脚本失败。
 无需 Python 第三方依赖。
+
+调试指定输入时，编辑 `debug/inputs.json`，执行 `bash debug.sh`。
+结果位于 `build/debug/signals.csv`（每例全部信号稳定值）和 `build/debug/signal_updates.csv`（逐次信号更新）。
 
 实际打拍由 TIE 转译完成，位置以 `// please add tie pipe here` 标记。
 插入寄存器时必须按注释对齐所有旁路信号。七拍划分未经目标时钟的静态时序验证。
