@@ -5,6 +5,7 @@
 
 - `docs/design.md`：算法、位宽、全区间误差预算、资源构成与七级流水线建议。
 - `rtl/exp_fp32.v`：组合 Verilog，无 if、always、时钟或反馈。
+- [V2 边界处理](docs/v2.md)：独立的 `rtl/exp_fp32_v2.v`，越过实测上界输出 +Inf，低于下界输出 +0；执行 `bash run_v2.sh` 验证。
 - `tb/tb_exp_fp32.sv`：逐位模型对比及数学参考误差检查。
 - `scripts/verify_model.py`：定点模型、测试向量生成和误差预算复算。
 - `scripts/generate_lut.py`：重生成 RTL 内的均衡查表选择树。
