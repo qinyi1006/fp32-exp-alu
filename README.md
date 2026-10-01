@@ -11,6 +11,7 @@
 - `docs/tools.md`：工具版本、位置、来源及安装原因。
 - `docs/validation.md`：实际验证结果及未验证事项。
 - [Q 格式误差研究](analysis/q_sweep/README.md)：Q12～Q26 最大相对误差曲线、全区间模型搜索、原始数据和复现脚本。
+- [实际输入范围边界](analysis/range_boundary/README.md)：±64 以外的 RTL 穷举、相邻 FP32 边界和溢出/下溢反例。
 - [TIE 对照调试](docs/debug.md)：自定义 32 位输入数组，导出全部信号的稳定值和逐次更新 CSV。
 
 在本目录执行：
